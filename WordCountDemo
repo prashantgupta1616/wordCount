@@ -1,0 +1,62 @@
+package com.ctl;
+
+import java.io.IOException;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
+import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
+
+/**
+ * @author Prashant Gupta
+ *
+ */
+public class WordCount {
+
+	public static void main(String[] args) {
+		if (args.length != 2) {
+			System.exit(-1);
+		}
+
+		try {
+			// Setting up the Job object
+			Job job = Job.getInstance(new Configuration());
+
+			// Setting the Mapeer-Reducer Class
+			job.setMapperClass(WordMapper.class);
+			job.setReducerClass(WordReducer.class);
+
+			// Setting the Input Key-Value pair
+			job.setInputFormatClass(TextInputFormat.class);
+			job.setOutputFormatClass(TextOutputFormat.class);
+
+			// Setting the TYPE of Output/Result Key-Value Pair
+			job.setOutputKeyClass(Text.class);
+			job.setOutputValueClass(IntWritable.class);
+
+			// Passing Input File Path
+			FileInputFormat.setInputPaths(job, new Path(args[0]));
+			FileOutputFormat.setOutputPath(job, new Path(args[1]));
+			System.out.println("First  passed Argument | Input 	Path:" + args[0].toString());
+			System.out.println("Second passed Argument | OutPut Path:" + args[1].toString());
+
+			// Setting up the jar File for MapReduce Job
+			job.setJarByClass(WordCount.class);
+			job.submit();
+			job.waitForCompletion(true);
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+
+	}
+
+}
