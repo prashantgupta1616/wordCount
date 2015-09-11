@@ -1,0 +1,43 @@
+package com.ctl;
+
+import java.io.IOException;
+import java.util.StringTokenizer;
+import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Mapper;
+
+/**
+ * @author Prashant Gupta
+ *
+ */
+// <KEYIN, VALUEIN, KEYOUT, VALUEOUT>
+public class WordMapper extends Mapper<Object, Text, Text, IntWritable> {
+
+	// Defining the required variable for the Mapper Job
+	private Text wordKeyVarible = new Text();
+	private final static IntWritable wordCountValueVarible = new IntWritable(1);
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.apache.hadoop.mapreduce.Mapper#map(KEYIN, VALUEIN,
+	 * org.apache.hadoop.mapreduce.Mapper.Context) Overriding the Map Function
+	 * SO InputFile's offset will be a Key and corresponding Whole line will
+	 * become Value
+	 */
+	@Override
+	// Map<KEYIN, VALUEIN,Context>
+	public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
+
+		// Converting the line into Tokens
+		StringTokenizer tokens = new StringTokenizer(value.toString());
+		// Iterating the Tokens using While loop
+		while (tokens.hasMoreTokens()) {
+			wordKeyVarible.set(tokens.nextToken());
+			// Writing the key-value pairs in Context object
+			context.write(wordKeyVarible, wordCountValueVarible);
+		}
+
+	}
+
+}
