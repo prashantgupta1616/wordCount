@@ -1,0 +1,34 @@
+package com.ctl;
+
+import java.io.IOException;
+import java.util.Iterator;
+
+import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Reducer;
+
+/**
+ * @author Prashant Gupta
+ *
+ */
+public class WordReducer extends Reducer<Text, IntWritable, Text, IntWritable> {
+
+	private IntWritable totalWordCount = new IntWritable();
+
+	@Override
+	public void reduce(Text textKey, Iterable<IntWritable> value, Context context) throws IOException, InterruptedException {
+		int wordCount = 0;
+
+		Iterator<IntWritable> it = value.iterator();
+		while (it.hasNext()) {
+			/*
+			 * wordCount = it.next().get(); wordCount++;
+			 */
+			wordCount += it.next().get();
+		}
+		totalWordCount.set(wordCount);
+		// writing the final output on context object
+		context.write(textKey, totalWordCount);
+	}
+
+}
